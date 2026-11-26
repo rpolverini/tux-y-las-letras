@@ -1,6 +1,5 @@
 /* Textos en español. Es JavaScript (no JSON) para que funcione con doble clic, sin servidor.
-   Para otro idioma: copiar a lang/en.js, traducir, y abrir la página con ?lang=en
-   "phonemes" (opcional) lo usa solo tools/generate_audio.py para sintetizar el sonido de la letra con Piper. */
+   Para otro idioma: copiar a lang/en.js, traducir, y abrir la página con ?lang=en */
 window.LANG = {
   "meta": {
     "lang": "es",
@@ -56,179 +55,138 @@ window.LANG = {
   "letters": {
     "A": {
       "name": "a",
-      "sound": "aaa",
       "word": "Abeja",
-      "emoji": "🐝",
-      "phonemes": "aː"
+      "emoji": "🐝"
     },
     "B": {
       "name": "be",
-      "sound": "ba",
       "word": "Ballena",
       "emoji": "🐳"
     },
     "C": {
       "name": "ce",
-      "sound": "ka",
       "word": "Casa",
       "emoji": "🏠"
     },
     "D": {
       "name": "de",
-      "sound": "da",
       "word": "Dado",
       "emoji": "🎲"
     },
     "E": {
       "name": "e",
-      "sound": "eee",
       "word": "Elefante",
-      "emoji": "🐘",
-      "phonemes": "eː"
+      "emoji": "🐘"
     },
     "F": {
       "name": "efe",
-      "sound": "fff",
       "word": "Flor",
-      "emoji": "🌸",
-      "phonemes": "fː"
+      "emoji": "🌸"
     },
     "G": {
       "name": "ge",
-      "sound": "ga",
       "word": "Gato",
       "emoji": "🐱"
     },
     "H": {
       "name": "hache",
-      "sound": "shhh",
       "word": "Helado",
-      "emoji": "🍦",
-      "phonemes": "ʃː"
+      "emoji": "🍦"
     },
     "I": {
       "name": "i",
-      "sound": "iii",
       "word": "Iglesia",
-      "emoji": "⛪",
-      "phonemes": "iː"
+      "emoji": "⛪"
     },
     "J": {
       "name": "jota",
-      "sound": "ja",
       "word": "Jirafa",
       "emoji": "🦒"
     },
     "K": {
       "name": "ka",
-      "sound": "ka",
       "word": "Koala",
       "emoji": "🐨"
     },
     "L": {
       "name": "ele",
-      "sound": "lll",
       "word": "León",
-      "emoji": "🦁",
-      "phonemes": "lː"
+      "emoji": "🦁"
     },
     "M": {
       "name": "eme",
-      "sound": "mmm",
       "word": "Mariposa",
-      "emoji": "🦋",
-      "phonemes": "mː"
+      "emoji": "🦋"
     },
     "N": {
       "name": "ene",
-      "sound": "nnn",
       "word": "Nube",
-      "emoji": "☁️",
-      "phonemes": "nː"
+      "emoji": "☁️"
     },
     "Ñ": {
       "name": "eñe",
-      "sound": "ña",
       "word": "Ñandú",
       "emoji": "🐦"
     },
     "O": {
       "name": "o",
-      "sound": "ooo",
       "word": "Oso",
-      "emoji": "🐻",
-      "phonemes": "oː"
+      "emoji": "🐻"
     },
     "P": {
       "name": "pe",
-      "sound": "pa",
       "word": "Perro",
       "emoji": "🐶"
     },
     "Q": {
       "name": "cu",
-      "sound": "ka",
       "word": "Queso",
       "emoji": "🧀"
     },
     "R": {
       "name": "erre",
-      "sound": "rrr",
       "word": "Ratón",
-      "emoji": "🐭",
-      "phonemes": "r"
+      "emoji": "🐭"
     },
     "S": {
       "name": "ese",
-      "sound": "sss",
       "word": "Sol",
-      "emoji": "☀️",
-      "phonemes": "sː"
+      "emoji": "☀️"
     },
     "T": {
       "name": "te",
-      "sound": "ta",
       "word": "Tortuga",
       "emoji": "🐢"
     },
     "U": {
       "name": "u",
-      "sound": "uuu",
       "word": "Uva",
-      "emoji": "🍇",
-      "phonemes": "uː"
+      "emoji": "🍇"
     },
     "V": {
       "name": "uve",
-      "sound": "va",
       "word": "Vaca",
       "emoji": "🐄"
     },
     "W": {
       "name": "doble ve",
-      "sound": "gua",
       "word": "Waffle",
       "emoji": "🧇"
     },
     "X": {
       "name": "equis",
-      "sound": "ks",
       "word": "Xilófono",
-      "emoji": "🎶",
-      "phonemes": "ks"
+      "emoji": "🎶"
     },
     "Y": {
       "name": "i griega",
-      "sound": "ya",
       "word": "Yo-yo",
       "emoji": "🪀"
     },
     "Z": {
       "name": "zeta",
-      "sound": "sss",
       "word": "Zapato",
-      "emoji": "👟",
-      "phonemes": "sː"
+      "emoji": "👟"
     }
   },
   "say": {
@@ -252,10 +210,10 @@ window.LANG = {
       "¿Cuál sigue?"
     ],
     "letterIntro": [
-      "{{sound}}, {{sound}}, {{sound}}. {{name}} de {{word}}",
-      "{{sound}}, {{sound}}. Es {{kind}} {{name}}, de {{word}}",
-      "Escuchá: {{sound}}, {{sound}}. {{name}} de {{word}}",
-      "{{sound}}, {{sound}}, {{sound}}. Esta es {{kind}} {{name}}, como en {{word}}"
+      "{{name}} de {{word}}",
+      "Es {{kind}} {{name}}, de {{word}}",
+      "Esta es {{kind}} {{name}}, como en {{word}}",
+      "Mirá: {{name}} de {{word}}"
     ],
     "numberIntro": [
       "Este es {{kind}} {{name}}",

@@ -5,7 +5,7 @@ Juegos para que un chico de 5 años aprenda letras y números con Tux. Es una **
 | Página | Qué es |
 |---|---|
 | `index.html` | **Menú**: botones grandes hacia cada juego. Los juegos que aparecen salen de `config.js`. |
-| `aprender.html` | **Aprender**: aprieta una tecla, Tux dice el sonido y la palabra (aaa, A de Abeja), y después hay que volver a apretarla. Los números se cuentan de a uno. |
+| `aprender.html` | **Aprender**: aprieta una tecla, Tux dice el sonido y la palabra ("efe de Flor"), y después hay que volver a apretarla. Los números se cuentan de a uno. |
 | `reconocer.html` | **Reconocer**: Tux pide "¿Dónde está la letra M?" y hay que elegir entre varias tarjetas. |
 | `caligrafia.html` | **Caligrafía (beta)**: trazar la letra con el dedo o un lápiz. Pensado para celular y tablet. |
 
@@ -44,7 +44,7 @@ Está comentado línea por línea. Lo principal:
 Ahí están todas las frases, las palabras de cada letra, los nombres de los números y el teclado. Los nombres de los juegos del menú están en `ui.games`.
 
 - Cada evento (`say.right`, `say.wrong`, `say.ask`…) es una **lista de variantes**: Tux elige una al azar y nunca repite la misma dos veces seguidas. Se pueden agregar o sacar variantes (mínimo 1).
-- Las frases usan variables entre llaves: `{{name}}` (nombre de la letra o número), `{{kind}}` ("la letra" / "el número"), `{{sound}}`, `{{word}}`.
+- Las frases usan variables entre llaves: `{{name}}` (nombre de la letra o número), `{{kind}}` ("la letra" / "el número"), `{{word}}` (la palabra de esa letra).
 - El archivo es JavaScript que contiene un objeto JSON: hay que respetar `window.LANG = { ... };` y las comillas dobles. Es `.js` y no `.json` para que funcione con doble clic (los navegadores bloquean `fetch` de archivos locales).
 - **Cambiar de idioma** es por URL: `index.html?lang=en` carga `lang/en.js` (y se recuerda). Sin parámetro usa el idioma del navegador y, si no existe ese archivo, `es`.
 - **Agregar un idioma**: copiar `lang/es.js` a `lang/en.js`, traducir (incluidos `meta.lang` y `meta.voiceLangs`), generar los audios (`--lang en`, ver abajo) y agregar la voz de Piper en `VOICES` de `tools/generate_audio.py`.
@@ -53,12 +53,11 @@ Ahí están todas las frases, las palabras de cada letra, los nombres de los nú
 
 Cada juego arranca con una pantalla con un botón ▶: los navegadores no dejan reproducir sonido hasta que alguien toca la pantalla o aprieta una tecla, y así Tux puede saludar con voz.
 
-Para usar los audios generados hay que poner `voice.engine: "files"` en `config.js`. Con `engine: "files"`, cada frase se corta en trozos por la puntuación (`.` `,` `:` `;` `?` `!`) y cada trozo tiene su clip: `"sss, sss, sss. ese de Sol"` se reproduce como `sss` + `sss` + `sss` + `ese de Sol`. Si falta el clip de un trozo, ese trozo se dice con la voz del navegador, así que el juego funciona aunque falte algo.
+Para usar los audios generados hay que poner `voice.engine: "files"` en `config.js`. Con `engine: "files"`, cada frase se corta en trozos por la puntuación (`.` `,` `:` `;` `?` `!`) y cada trozo tiene su clip: `"Es la letra efe, de Flor"` se reproduce como `Es la letra efe` + `de Flor`. Si falta el clip de un trozo, ese trozo se dice con la voz del navegador, así que el juego funciona aunque falte algo.
 
 ```
 audio/es/manifest.js     texto -> archivo (lo escribe el script)
-audio/es/sounds/         los sonidos de las letras: sss.m4a, mmm.m4a, ba.m4a...
-audio/es/phrases/        el resto de las frases: ahora-aprieta-la-letra-a.m4a...
+audio/es/phrases/        un clip por trozo de frase: efe-de-flor.m4a, ahora-aprieta-la-letra-a.m4a...
 ```
 
 ### Generar los audios con Piper (voz es_AR-daniela-high)
@@ -76,17 +75,15 @@ La primera vez baja la voz (unos 115 MB) a `tools/voices/`, que no se versiona. 
 - Los clips que **ya existen no se pisan**, así que se pueden correr de nuevo sin perder grabaciones. Regenerar todo: `--force`.
 - Si agregás o cambiás frases en `lang/es.js`, volvé a correr el script: genera solo lo que falta y actualiza `manifest.js`. Con `--prune` borra además los clips que ninguna frase usa (cuidado: también borra grabaciones propias que ya no se usen).
 - Otra voz: `--voice <nombre de Piper>`. Otro idioma: `--lang en`.
-- La velocidad de las frases (`PHRASE_STRETCH`) y cuánto se estiran los sonidos sostenidos (`SOUND_STRETCH`) son constantes al principio de `tools/generate_audio.py`.
+- La velocidad de las frases (`PHRASE_STRETCH`) es una constante al principio de `tools/generate_audio.py`.
 
 ### Reemplazar un audio por una grabación
 
-Es la forma recomendada para los sonidos de las letras (sobre todo b, p, t, k, d, g), que ninguna voz sintética pronuncia bien suelta.
+Sirve, por ejemplo, para grabar vos o la mamá del nene los nombres de las letras o los festejos.
 
 1. Grabá el sonido (mono, 0,5 a 1 s, sin silencio al principio ni al final, volumen parejo) y exportalo a `.m4a`, `.mp3`, `.ogg` o `.wav`.
 2. Guardalo en la carpeta con **el mismo nombre** que el clip actual. Para saber cuál es, buscá el texto en `audio/es/manifest.js`.
 3. Si el formato es distinto al que ya había, corré `.venv/bin/python tools/generate_audio.py`: reconoce el archivo nuevo, no genera nada más y actualiza el manifest.
-
-Los sonidos de las letras salen de los campos `sound` y `phonemes` de `lang/es.js`. `phonemes` (opcional) son fonemas IPA que Piper pronuncia con `[[ ]]` y estira; sin él, Piper lee el texto de `sound` (por ejemplo "ba"). Si querés otro sonido sintético, cambiá `phonemes` y regenerá con `--force`.
 
 ## Chequeo
 

@@ -16,7 +16,7 @@ const test = `
   assert.strictEqual(kb.length, Object.keys(T.letters).length + 10);
 
   // frases: arrays con variantes y solo variables conocidas
-  const vars = { letterIntro: ['sound','name','word','kind'], numberIntro: ['kind','name'], numberTotal: ['name'],
+  const vars = { letterIntro: ['name','word','kind'], numberIntro: ['kind','name'], numberTotal: ['name'],
     ask: ['kind','name'], wrong: ['kind','name'], findAsk: ['kind','name'], findWrong: ['kind','name'], traceAsk: ['kind','name'] };
   for (const [k, v] of Object.entries(T.say)) {
     assert(Array.isArray(v) && v.length >= 3, k + ' necesita >=3 variantes');
@@ -47,7 +47,7 @@ const test = `
   await loadScript('audio/' + T.meta.lang + '/manifest.js');
   const AUD = window.AUDIO || {};
   if (Object.keys(AUD).length) {
-    const Ls = Object.values(T.letters).map(v => ({ sound: v.sound, name: v.name, word: v.word, kind: T.kinds.letter }));
+    const Ls = Object.values(T.letters).map(v => ({ name: v.name, word: v.word, kind: T.kinds.letter }));
     const Ns = T.numbers.map(n => ({ name: n, kind: T.kinds.number }));
     const only = { letterIntro: Ls, numberIntro: Ns, numberTotal: Ns };
     const missing = new Set(), need = c => AUD[c] || missing.add(c);

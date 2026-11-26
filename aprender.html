@@ -17,8 +17,9 @@
 <div id="kb"></div>
 <script src="common.js"></script>
 <script>
-// Aprender: aprieta una tecla -> Tux dice el sonido y la palabra -> hay que volver a apretarla.
+// Aprender: aprieta una tecla -> Tux dice la letra y la palabra -> hay que volver a apretarla.
 let st = 'free', target = null, misses = 0;   // free -> busy -> confirm -> busy -> free
+const setSt = v => { st = v; $('kb').classList.toggle('off', v === 'busy'); };   // el teclado se atenúa mientras Tux habla
 const key = k => document.querySelector(`#kb button[data-k="${k}"]`);
 // hl: tecla que late; onlyHl: apaga las demás (ayuda tras dos errores)
 const mark = (hl, onlyHl) => document.querySelectorAll('#kb button').forEach(b =>
@@ -41,7 +42,7 @@ function show(k) {
 async function intro(k) {
   if (isLetter(k)) {
     const l = T.letters[k];
-    return talk(t('say.letterIntro', { sound: l.sound, name: l.name, word: l.word, kind: T.kinds.letter }));
+    return talk(t('say.letterIntro', { name: l.name, word: l.word, kind: T.kinds.letter }));
   }
   const n = +k, name = T.numbers[n];
   await talk(t('say.numberIntro', { kind: T.kinds.number, name }));
@@ -58,10 +59,10 @@ async function press(k) {
 
   if (st === 'confirm') {
     if (k === target) {
-      st = 'busy'; key(k).className = 'ok'; $('kb').classList.remove('on');
+      setSt('busy'); key(k).className = 'ok';
       bump(k);
       await talk(t('say.right'));
-      mark(); st = 'free'; target = null; home();
+      mark(); setSt('free'); target = null; home();
     } else {
       misses++;
       if (misses >= 2) { mark(target, true); talk(t('say.wrongHint')); }   // 2do error: queda una sola tecla
@@ -70,10 +71,10 @@ async function press(k) {
     return;
   }
 
-  st = 'busy'; misses = 0; show(k);
+  setSt('busy'); misses = 0; show(k);
   await intro(k);
-  target = k; st = 'confirm';
-  mark(k); $('kb').classList.add('on');
+  target = k; setSt('confirm');
+  mark(k);
   talk(t('say.ask', { kind: kindOf(k), name: nameOf(k) }));
 }
 
