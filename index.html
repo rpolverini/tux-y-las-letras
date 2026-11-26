@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tux y las letras</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header id="top"></header>
+<main>
+  <h1 id="title"></h1>
+  <nav id="games"></nav>
+</main>
+<div id="stage"><div id="tux"></div><div id="bubble"></div></div>
+<script src="common.js"></script>
+<script>
+// Menú: los juegos salen de CONFIG.games y sus nombres de lang/<idioma>.js
+(async () => {
+  await loadLang(); initPage('home');
+  $('title').textContent = T.ui.title;
+  $('games').innerHTML = C.games.map(g =>
+    `<a class="game" href="${g.href}"><span>${g.icon}</span>${T.ui.games[g.id]}${g.beta ? `<small>${T.ui.beta}</small>` : ''}</a>`).join('');
+  lastSaid = t('say.menu'); $('bubble').textContent = lastSaid;   // tocar a Tux la dice en voz alta
+})();
+</script>
+</body>
+</html>

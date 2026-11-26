@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tux y las letras</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header id="top"></header>
+<main>
+  <div id="tag"></div>
+  <div id="big">🐧</div>
+  <div id="info"></div>
+</main>
+<div id="stage"><div id="tux"></div><div id="bubble"></div></div>
+<div id="kb"></div>
+<script src="common.js"></script>
+<script>
+// Aprender: aprieta una tecla -> Tux dice el sonido y la palabra -> hay que volver a apretarla.
+let st = 'free', target = null, misses = 0;   // free -> busy -> confirm -> busy -> free
+const key = k => document.querySelector(`#kb button[data-k="${k}"]`);
+// hl: tecla que late; onlyHl: apaga las demás (ayuda tras dos errores)
+const mark = (hl, onlyHl) => document.querySelectorAll('#kb button').forEach(b =>
+  b.className = b.dataset.k === hl ? 'hl' : onlyHl ? 'gone' : '');
+const home = () => {
+  document.body.className = ''; $('big').textContent = '🐧'; $('info').textContent = '';
+  talk(t('say.idle'));   // sin await: si aprieta una tecla, la voz se corta y sigue
+};
+
+function show(k) {
+  const L = isLetter(k);
+  document.body.className = L ? 'letra' : 'numero';
+  $('tag').textContent = L ? T.ui.tagLetter : T.ui.tagNumber;
+  $('big').textContent = k;
+  $('info').innerHTML = L
+    ? `${T.letters[k].emoji} <b>${T.letters[k].word[0]}</b>${T.letters[k].word.slice(1)}`
+    : `<div>${T.numbers[k]}</div><div id="stars">${opts.count || +k === 0 ? '' : '⭐'.repeat(+k)}</div>`;
+}
+
+async function intro(k) {
+  if (isLetter(k)) {
+    const l = T.letters[k];
+    return talk(t('say.letterIntro', { sound: l.sound, name: l.name, word: l.word, kind: T.kinds.letter }));
+  }
+  const n = +k, name = T.numbers[n];
+  await talk(t('say.numberIntro', { kind: T.kinds.number, name }));
+  if (!n) { $('stars').textContent = T.ui.nothing; return talk(t('say.numberZero')); }
+  if (!opts.count) return;
+  await talk(t('say.numberCount'));
+  for (let i = 1; i <= n; i++) { $('stars').textContent += '⭐'; await talk(T.numbers[i]); }
+  await talk(t('say.numberTotal', { name }));
+}
+
+async function press(k) {
+  if (!isKey(k) || st === 'busy') return;
+  startBreaks(() => st === 'free');
+
+  if (st === 'confirm') {
+    if (k === target) {
+      st = 'busy'; key(k).className = 'ok'; $('kb').classList.remove('on');
+      bump(k);
+      await talk(t('say.right'));
+      mark(); st = 'free'; target = null; home();
+    } else {
+      misses++;
+      if (misses >= 2) { mark(target, true); talk(t('say.wrongHint')); }   // 2do error: queda una sola tecla
+      else talk(t('say.wrong', { kind: kindOf(target), name: nameOf(target) }));
+    }
+    return;
+  }
+
+  st = 'busy'; misses = 0; show(k);
+  await intro(k);
+  target = k; st = 'confirm';
+  mark(k); $('kb').classList.add('on');
+  talk(t('say.ask', { kind: kindOf(k), name: nameOf(k) }));
+}
+
+(async () => {
+  await loadLang(); initPage('learn', ['count']);
+  T.keyboard.forEach(r => {
+    const d = document.createElement('div'); d.className = 'row';
+    [...r].forEach(c => { const b = document.createElement('button'); b.textContent = c; b.dataset.k = c; b.tabIndex = -1; b.onclick = () => press(c); d.append(b); });
+    $('kb').append(d);
+  });
+  $('bubble').textContent = t('say.hello');
+  onKey(press);
+  if (window.speechSynthesis) speechSynthesis.getVoices();   // precarga voces
+})();
+</script>
+</body>
+</html>

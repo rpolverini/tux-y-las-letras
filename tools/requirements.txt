@@ -1,0 +1,3 @@
+# Piper necesita Python 3.9 a 3.12 (onnxruntime aún no soporta versiones más nuevas).
+# Con uv:  uv venv --python 3.12 .venv && uv pip install --python .venv/bin/python -r tools/requirements.txt
+piper-tts

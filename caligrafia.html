@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tux y las letras</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header id="top"></header>
+<main>
+  <div id="pad"><canvas id="guide" width="600" height="600"></canvas><canvas id="ink" width="600" height="600"></canvas></div>
+  <div class="btns"><button id="clear"></button><button id="skip"></button></div>
+</main>
+<div id="stage"><div id="tux"></div><div id="bubble"></div></div>
+<script src="common.js"></script>
+<script>
+// BETA: pensado para celular/tablet con dedo o lápiz. No guía el orden ni la dirección del trazo.
+const S = 600;   // umbrales (brush, cover, maxInk) en config.js: ajustar probando con el nene
+let cur, drawing = false, done = false, started = false, ctxG, ctxI;
+
+function glyph(c) {   // misma tipografía para la guía y la máscara que mide el trazo
+  c.font = `900 ${S * .85}px system-ui, sans-serif`; c.textAlign = 'center'; c.textBaseline = 'middle';
+  return [cur, S / 2, S / 2 + S * .04];
+}
+
+function next() {
+  done = false; cur = shuffle(allKeys())[0];
+  ctxG.clearRect(0, 0, S, S); ctxI.clearRect(0, 0, S, S);
+  const a = glyph(ctxG);
+  ctxG.fillStyle = '#e3e6ec'; ctxG.fillText(...a);
+  ctxG.setLineDash([10, 14]); ctxG.lineWidth = 3; ctxG.strokeStyle = '#9aa3b2'; ctxG.strokeText(...a);
+  ctxI.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue(isLetter(cur) ? '--letter' : '--num');
+  document.body.className = isLetter(cur) ? 'letra' : 'numero';
+  talk(t('say.traceAsk', { kind: kindOf(cur), name: nameOf(cur) }));
+}
+
+function check() {
+  const m = document.createElement('canvas'); m.width = m.height = S;
+  const mc = m.getContext('2d'); mc.fillText(...glyph(mc));
+  const a = mc.getImageData(0, 0, S, S).data, b = ctxI.getImageData(0, 0, S, S).data;
+  let mask = 0, cov = 0, ink = 0;
+  for (let i = 3; i < a.length; i += 4) {
+    const inM = a[i] > 128, inI = b[i] > 128;
+    if (inM) { mask++; if (inI) cov++; }
+    if (inI) ink++;
+  }
+  const { cover, maxInk } = C.trace;
+  if (cov / mask >= cover && ink / mask <= maxInk) return win();
+  if (ink / mask > maxInk) { ctxI.clearRect(0, 0, S, S); talk(t('say.traceKeepGoing')); }   // garabato: se limpia y se vuelve a empezar
+}
+
+async function win() {
+  done = true; await talk(t('say.right')); next();
+}
+
+const pos = e => { const r = e.target.getBoundingClientRect(); return [(e.clientX - r.left) * S / r.width, (e.clientY - r.top) * S / r.height]; };
+
+(async () => {
+  await loadLang(); initPage('trace');
+  $('clear').textContent = T.ui.clear; $('skip').textContent = T.ui.skip;
+  ctxG = $('guide').getContext('2d'); ctxI = $('ink').getContext('2d');
+  ctxI.lineWidth = C.trace.brush; ctxI.lineCap = ctxI.lineJoin = 'round';
+  $('bubble').textContent = t('say.hello');
+
+  const ink = $('ink');
+  ink.onpointerdown = e => {
+    if (!started) { started = true; next(); }
+    if (done) return;
+    startBreaks(() => !done);
+    ink.setPointerCapture(e.pointerId); drawing = true;
+    const [x, y] = pos(e); ctxI.beginPath(); ctxI.moveTo(x, y); ctxI.lineTo(x + .01, y); ctxI.stroke();
+  };
+  ink.onpointermove = e => { if (!drawing) return; const [x, y] = pos(e); ctxI.lineTo(x, y); ctxI.stroke(); };
+  ink.onpointerup = ink.onpointercancel = () => { if (drawing) { drawing = false; if (!done) check(); } };
+  $('clear').onclick = () => started && ctxI.clearRect(0, 0, S, S);
+  $('skip').onclick = () => { started = true; next(); };
+  if (window.speechSynthesis) speechSynthesis.getVoices();
+})();
+</script>
+</body>
+</html>

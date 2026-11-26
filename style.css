@@ -1,0 +1,54 @@
+/* Paleta Waldorf: veladuras suaves tipo acuarela (rosa en reposo, azul para letras, dorado para números), sin movimientos bruscos. */
+:root{--bg:#f6dfe0;--ink:#3d4451;--letter:#4a6fa5;--letterBg:#dce9f6;--num:#b2672a;--numBg:#fbe5b5;--ok:#bfe3c9;--hint:#f6e3a1}
+body{margin:0;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:space-between;
+  background:var(--bg);color:var(--ink);font-family:"Trebuchet MS",system-ui,sans-serif;user-select:none;transition:background .8s}
+body.letra{background:var(--letterBg)} body.numero{background:var(--numBg)}
+main{display:flex;flex-direction:column;align-items:center}
+
+header#top{width:100%;display:flex;flex-wrap:wrap;gap:1vmin 2vmin;justify-content:space-between;min-height:6vmin;align-items:center;padding:1.2vmin;
+  box-sizing:border-box;font-size:max(14px,2.6vmin)}
+header a{padding:.4em 1em;border-radius:99px;background:#fff;color:var(--ink);text-decoration:none;font-weight:700;box-shadow:0 0 0 2px var(--ink)}
+details{position:relative} summary{cursor:pointer;padding:.4em 1em;border-radius:99px;background:#fff8;font-weight:700}
+.panel{position:absolute;right:0;top:120%;z-index:5;background:#fff;border-radius:12px;padding:12px 16px;box-shadow:0 4px 18px #0003;white-space:nowrap}
+.panel label{display:block;margin:6px 0}
+
+#tag{padding:.2em 1em;border-radius:99px;color:#fff;font-weight:800;font-size:4.5vmin;letter-spacing:.1em;visibility:hidden}
+.letra #tag{background:var(--letter);visibility:visible} .numero #tag{background:var(--num);visibility:visible}
+#big{font-size:30vmin;font-weight:900;line-height:1.1;color:var(--ink)}
+.letra #big{color:var(--letter)} .numero #big{color:var(--num)}
+#info{font-size:6.5vmin;font-weight:700;min-height:1.3em;text-align:center}
+#info b{font-size:1.2em}
+#stars{font-size:5vmin;max-width:80vw;word-break:break-all}
+
+#stage{display:flex;align-items:center;gap:2vmin;padding:1vmin}
+#tux{width:20vmin;cursor:pointer}
+#tux.talk{animation:bob .6s infinite alternate ease-in-out}
+@keyframes bob{to{transform:translateY(-1vmin)}}
+#bubble{background:#fff;border:.5vmin solid var(--ink);border-radius:3vmin;padding:1.5vmin 3vmin;font-size:max(16px,4.6vmin);font-weight:700;max-width:55vw}
+
+#kb{display:flex;flex-direction:column;align-items:center;gap:.8vmin;margin-bottom:2vh;opacity:.25;pointer-events:none;transition:opacity .6s}
+#kb.on{opacity:1;pointer-events:auto}
+.row{display:flex;gap:.8vmin}
+.row button{width:7vmin;height:7vmin;font-size:4vmin;font-weight:800;border:.4vmin solid #aab;border-radius:1.2vmin;background:#fff;color:var(--ink)}
+.row button.hl{background:var(--hint);border-color:#b99a2b;animation:glow 1.4s infinite alternate ease-in-out}
+.row button.ok{background:var(--ok)}
+.row button.gone{opacity:.12;pointer-events:none}
+@keyframes glow{to{box-shadow:0 0 0 1vmin #f6e3a1aa}}
+
+#cards{display:flex;gap:3vmin;flex-wrap:wrap;justify-content:center;padding:2vmin}
+.card{width:24vmin;height:24vmin;font-size:14vmin;font-weight:900;border-radius:4vmin;border:.6vmin solid;background:#fff;cursor:pointer;transition:opacity .6s,background .4s}
+.card.L{color:var(--letter);border-color:var(--letter)} .card.N{color:var(--num);border-color:var(--num)}
+.card.gone{opacity:.12;pointer-events:none} .card.ok{background:var(--ok)}
+
+#pad{position:relative;width:min(62vmin,90vw);aspect-ratio:1;background:#fff;border-radius:3vmin;box-shadow:0 2px 12px #0002}
+#pad canvas{position:absolute;inset:0;width:100%;height:100%}
+#ink{touch-action:none}
+.btns{display:flex;gap:2vmin;margin-top:1.5vmin}
+.btns button{font-size:max(14px,3vmin);padding:.4em 1.2em;border-radius:99px;border:2px solid var(--ink);background:#fff;color:var(--ink);font-weight:700}
+
+h1{font-size:max(24px,7vmin);margin:2vmin 0 3vmin;text-align:center}
+#games{display:flex;gap:3vmin;flex-wrap:wrap;justify-content:center}
+.game{display:flex;flex-direction:column;align-items:center;gap:1vmin;width:26vmin;padding:3vmin;border-radius:4vmin;background:#fff;
+  color:var(--ink);text-decoration:none;font-size:max(16px,4vmin);font-weight:800;box-shadow:0 2px 12px #0002}
+.game span{font-size:12vmin;line-height:1}
+.game small{font-size:.6em;font-weight:700;color:var(--num)}

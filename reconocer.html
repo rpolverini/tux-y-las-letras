@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tux y las letras</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header id="top"></header>
+<main><div id="cards"></div></main>
+<div id="stage"><div id="tux"></div><div id="bubble"></div></div>
+<script src="common.js"></script>
+<script>
+// Segundo tiempo de Montessori: "mostrame la M". Tux pide, el nene busca entre 3 opciones.
+let started = false, target = null, misses = 0, ok = true;
+const ask = key => ({ kind: kindOf(target), name: nameOf(target) });
+
+async function round() {
+  ok = false; misses = 0;
+  target = shuffle(recoPool())[0];
+  $('cards').innerHTML = '';
+  choices(target, C.findOptions).forEach(k => {
+    const b = document.createElement('button');
+    b.className = 'card ' + (isLetter(k) ? 'L' : 'N'); b.textContent = k; b.dataset.k = k;
+    b.onclick = () => answer(k);
+    $('cards').append(b);
+  });
+  talk(t('say.findAsk', ask()));
+}
+
+async function answer(k) {
+  if (ok || !isKey(k)) return;
+  startBreaks(() => !ok);
+  if (k === target) {
+    ok = true;
+    document.querySelector(`.card[data-k="${k}"]`)?.classList.add('ok');
+    await talk(t('say.right'));
+    return round();
+  }
+  misses++;
+  document.querySelector(`.card[data-k="${k}"]`)?.classList.add('gone');   // la equivocada se apaga: sin castigo, solo menos opciones
+  if (misses >= 2) document.querySelectorAll('.card').forEach(c => c.dataset.k !== target && c.classList.add('gone'));
+  talk(t('say.findWrong', ask()));
+}
+
+const go = () => { if (!started) { started = true; round(); return true; } };
+
+(async () => {
+  await loadLang(); initPage('find');
+  $('bubble').textContent = t('say.hello');
+  onKey(k => go() || answer(k));
+  addEventListener('pointerdown', go);
+  if (window.speechSynthesis) speechSynthesis.getVoices();
+})();
+</script>
+</body>
+</html>
