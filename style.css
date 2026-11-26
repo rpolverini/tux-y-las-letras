@@ -52,3 +52,7 @@ h1{font-size:max(24px,7vmin);margin:2vmin 0 3vmin;text-align:center}
   color:var(--ink);text-decoration:none;font-size:max(16px,4vmin);font-weight:800;box-shadow:0 2px 12px #0002}
 .game span{font-size:12vmin;line-height:1}
 .game small{font-size:.6em;font-weight:700;color:var(--num)}
+
+#gate{position:fixed;inset:0;z-index:20;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4vmin;cursor:pointer}
+#gate .gtux{width:28vmin}
+#gate button{font-size:max(20px,6vmin);font-weight:800;padding:.5em 1.5em;border-radius:99px;border:.5vmin solid var(--ink);background:#fff;color:var(--ink);cursor:pointer}

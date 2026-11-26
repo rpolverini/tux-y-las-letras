@@ -11,12 +11,13 @@ window.CONFIG = {
     { id: "trace", href: "caligrafia.html", icon: "✏️", beta: true }
   ],
   voice: {
-    useClips: true,    // true = usa los audios de audio/<idioma>/ (Piper o grabados) y, si falta alguno, la voz del navegador
-    clipRate: 1,       // velocidad de los audios: 1 normal, 0.9 un poco más lenta (no cambia el tono)
-    // Lo que sigue solo vale para la voz del navegador (cuando falta un audio o useClips es false):
+    engine: "browser", // "browser" = voz del navegador (varía según el dispositivo) | "files" = audios de audio/<idioma>/ (Piper o grabados; si falta uno, usa la voz del navegador)
+    // Solo para engine "browser" (y para los audios que falten en "files"):
     name: "",          // nombre (o parte) de una voz instalada, ej. "Paulina" o "Google español". Vacío = elige por idioma
     rate: 0.8,         // velocidad: 0.5 muy lenta, 1 normal
-    pitch: 1.2         // tono: 1 normal, más alto = más agudo
+    pitch: 1.2,        // tono: 1 normal, más alto = más agudo
+    // Solo para engine "files":
+    clipRate: 1        // velocidad de los audios: 1 normal, 0.9 un poco más lenta (no cambia el tono)
   },
   findOptions: 3,      // Reconocer: cuántas tarjetas se muestran
   sessionGapMin: 30,   // minutos sin jugar para empezar una sesión nueva (reinicia las pausas)
@@ -25,8 +26,9 @@ window.CONFIG = {
     { min: 10, say: "say.breakPlay" }
   ],
   trace: {             // Caligrafía (beta)
-    brush: 70,         // grosor del pincel en px (de 600)
-    cover: 0.6,        // cuánto de la letra hay que cubrir para darla por buena (0 a 1)
-    maxInk: 2.2        // más tinta que esto (x el tamaño de la letra) se toma como garabato
+    brush: 1.2,        // grosor del pincel respecto del grosor medido del trazo de la letra (se adapta a cualquier tipografía)
+    cover: 0.8,        // cuánto de la letra hay que pintar para darla por buena (0 a 1)
+    maxOutside: 0.15,  // cuánto del recorrido puede quedar fuera de la letra (0.15 = 15%); si se pasa, se borra y se empieza de nuevo
+    tolerance: 14      // margen en px alrededor de la letra que todavía cuenta como "adentro" (de 600)
   }
 };

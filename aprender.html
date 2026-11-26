@@ -85,6 +85,7 @@ async function press(k) {
     $('kb').append(d);
   });
   $('bubble').textContent = t('say.hello');
+  startGate(() => talk(t('say.hello')));
   onKey(press);
   if (window.speechSynthesis) speechSynthesis.getVoices();   // precarga voces
 })();

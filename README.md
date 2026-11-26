@@ -32,12 +32,12 @@ Está comentado línea por línea. Lo principal:
 - `showOptions`: muestra u oculta el botón ⚙ con opciones para el adulto. Con `false` (por defecto), las opciones se toman de `defaults`.
 - `defaults.count`: Aprender cuenta los números de a uno ("uno, dos, tres…").
 - `games`: qué juegos aparecen en el menú y en qué orden. Para ocultar uno, sacalo de la lista.
-- `voice.useClips`: usar los audios de `audio/<idioma>/` (`true`) o solo la voz del navegador (`false`).
-- `voice.clipRate`: velocidad de los audios (1 normal, 0.9 un poco más lenta).
-- `voice.name`, `voice.rate`, `voice.pitch`: la voz del navegador, que se usa solo cuando falta un audio.
+- `voice.engine`: `"browser"` (por defecto) usa la voz del navegador, que cambia según el dispositivo; `"files"` usa los audios de `audio/<idioma>/` (Piper o grabados) y, si falta alguno, la voz del navegador.
+- `voice.name`, `voice.rate`, `voice.pitch`: la voz del navegador (con `engine: "files"` solo se usa cuando falta un audio).
+- `voice.clipRate`: velocidad de los audios (1 normal, 0.9 un poco más lenta). Solo con `engine: "files"`.
 - `findOptions`: cuántas tarjetas se muestran en Reconocer.
 - `breaks`: a los 5 y 10 minutos Tux sugiere salir a caminar y luego a jugar o andar en bici. Se pueden cambiar los minutos y las frases.
-- `trace`: grosor del pincel y umbrales de la caligrafía.
+- `trace`: Caligrafía (beta). `cover` = cuánto de la letra hay que pintar (0,8 = 80 %), `maxOutside` = cuánto del recorrido puede quedar fuera de la letra (0,15 = 15 %; si se pasa, se borra y se empieza de nuevo), `tolerance` = margen en píxeles que cuenta como "adentro" y `brush` = grosor del pincel.
 
 ## Textos e idiomas: `lang/<idioma>.js`
 
@@ -51,7 +51,9 @@ Ahí están todas las frases, las palabras de cada letra, los nombres de los nú
 
 ## Audio
 
-Cada frase se corta en trozos por la puntuación (`.` `,` `:` `;` `?` `!`) y cada trozo tiene su clip: `"sss, sss, sss. ese de Sol"` se reproduce como `sss` + `sss` + `sss` + `ese de Sol`. Si falta el clip de un trozo, ese trozo se dice con la voz del navegador, así que el juego funciona aunque falte algo.
+Cada juego arranca con una pantalla con un botón ▶: los navegadores no dejan reproducir sonido hasta que alguien toca la pantalla o aprieta una tecla, y así Tux puede saludar con voz.
+
+Para usar los audios generados hay que poner `voice.engine: "files"` en `config.js`. Con `engine: "files"`, cada frase se corta en trozos por la puntuación (`.` `,` `:` `;` `?` `!`) y cada trozo tiene su clip: `"sss, sss, sss. ese de Sol"` se reproduce como `sss` + `sss` + `sss` + `ese de Sol`. Si falta el clip de un trozo, ese trozo se dice con la voz del navegador, así que el juego funciona aunque falte algo.
 
 ```
 audio/es/manifest.js     texto -> archivo (lo escribe el script)

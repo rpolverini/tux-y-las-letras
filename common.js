@@ -37,7 +37,7 @@ async function loadLang() {
   }
   for (const k in C.defaults) opts[k] = C.showOptions ? store.get('opt.' + k, C.defaults[k]) : C.defaults[k];
   window.AUDIO = undefined;
-  await loadScript(`audio/${T.meta.lang}/manifest.js`);   // opcional: sin manifest, todo se dice con la voz del navegador
+  if (C.voice.engine === 'files') await loadScript(`audio/${T.meta.lang}/manifest.js`);   // opcional: sin manifest, todo se dice con la voz del navegador
 }
 
 // Una clave puede ser un texto o un array de variantes; con array sortea una distinta de la anterior.
@@ -99,9 +99,10 @@ async function say(text) {
   const id = ++sayId;
   stopClip();
   if (window.speechSynthesis) speechSynthesis.cancel();
+  if (C.voice.engine !== 'files') return speak(text);   // voz del navegador: la frase entera, para que suene natural
   for (const p of chunksOf(text)) {
     if (id !== sayId) return;
-    const f = C.voice.useClips && (window.AUDIO || {})[p];
+    const f = (window.AUDIO || {})[p];
     if (f && await clip(`audio/${T.meta.lang}/${f}`)) continue;
     if (id !== sayId) return;
     await speak(p);
@@ -154,6 +155,22 @@ function initPage(cur, optionKeys = []) {
   });
   $('tux').innerHTML = TUX;
   $('tux').onclick = () => lastSaid && talk(lastSaid);
+}
+
+// Los navegadores no dejan sonar nada hasta que la persona toca la pantalla o una tecla:
+// pantalla de inicio con un botón; al tocarla (o apretar una tecla) arranca el juego con sonido.
+function startGate(onStart) {
+  const g = document.createElement('div');
+  g.id = 'gate';
+  g.innerHTML = `<div class="gtux">${TUX}</div><button>▶ ${T.ui.start}</button>`;
+  const go = e => {
+    if (e.type === 'keydown' && (e.ctrlKey || e.metaKey || e.altKey)) return;
+    e.stopPropagation();   // esa primera tecla solo sirve para empezar
+    removeEventListener('keydown', go, true); g.remove(); onStart();
+  };
+  addEventListener('keydown', go, true);
+  g.onclick = go;
+  document.body.append(g);
 }
 
 function onKey(fn) {

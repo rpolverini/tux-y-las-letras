@@ -14,6 +14,7 @@ window.LANG = {
   "ui": {
     "title": "Tux y las letras",
     "home": "Inicio",
+    "start": "Tocá para empezar",
     "beta": "beta",
     "games": {
       "learn": "Aprender",

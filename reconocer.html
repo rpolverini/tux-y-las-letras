@@ -13,7 +13,7 @@
 <script src="common.js"></script>
 <script>
 // Segundo tiempo de Montessori: "mostrame la M". Tux pide, el nene busca entre 3 opciones.
-let started = false, target = null, misses = 0, ok = true;
+let target = null, misses = 0, ok = true;   // ok = true hasta que arranca la primera ronda
 const ask = key => ({ kind: kindOf(target), name: nameOf(target) });
 
 async function round() {
@@ -44,13 +44,11 @@ async function answer(k) {
   talk(t('say.findWrong', ask()));
 }
 
-const go = () => { if (!started) { started = true; round(); return true; } };
-
 (async () => {
   await loadLang(); initPage('find');
   $('bubble').textContent = t('say.hello');
-  onKey(k => go() || answer(k));
-  addEventListener('pointerdown', go);
+  startGate(round);
+  onKey(answer);
   if (window.speechSynthesis) speechSynthesis.getVoices();
 })();
 </script>

@@ -2,6 +2,7 @@
 // Carga config.js y lang/<idioma>.js como lo hace el navegador y verifica que los datos sean consistentes.
 const fs = require('fs'), vm = require('vm'), assert = require('assert');
 const dir = process.argv[2] || __dirname;
+const { S, strokeWidth, traceScore } = require(dir + '/trace.js');
 const code = fs.readFileSync(dir + '/common.js', 'utf8');
 
 const test = `
@@ -43,6 +44,7 @@ const test = `
   assert(recoPool().length >= 3);
 
   // audios: todo trozo que Tux puede decir tiene clip (si hay manifest) y el archivo existe
+  await loadScript('audio/' + T.meta.lang + '/manifest.js');
   const AUD = window.AUDIO || {};
   if (Object.keys(AUD).length) {
     const Ls = Object.values(T.letters).map(v => ({ sound: v.sound, name: v.name, word: v.word, kind: T.kinds.letter }));
@@ -61,6 +63,26 @@ const test = `
   console.log('OK');
 })().catch(e => { console.error(e); process.exit(1); });
 `;
+
+// caligrafía: sobre una letra sintética (una barra), un trazo prolijo pasa y un garabato o un trazo corto no
+{
+  const bar = new Uint8ClampedArray(S * S * 4), near = new Uint8ClampedArray(S * S * 4), ink = new Uint8ClampedArray(S * S * 4);
+  const paint = (a, x0, x1, y0, y1) => { for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) a[(y * S + x) * 4 + 3] = 255; };
+  paint(bar, 100, 500, 280, 380);   // barra de 100 px de grosor
+  paint(near, 86, 514, 266, 394);   // + tolerancia de 14 px
+  assert(Math.abs(strokeWidth(bar) - 80) < 2, 'grosor ' + strokeWidth(bar));   // 2*área/perímetro = 80 para esta barra de 400x100 (subestima ~20% por las puntas)
+  const line = (y, x0, x1) => Array.from({ length: (x1 - x0) / 6 + 1 }, (_, i) => [x0 + i * 6, y]);
+  paint(ink, 100, 500, 280, 380);   // pintó toda la barra
+  let r = traceScore(bar, near, ink, line(330, 100, 500));
+  assert(r.cov > .99 && r.off === 0, 'trazo prolijo ' + JSON.stringify(r));
+  r = traceScore(bar, near, ink, [...line(330, 100, 500), ...line(550, 100, 160)]);   // 10 puntos de ~76 afuera
+  assert(r.off > .1 && r.off < .2, 'algo afuera ' + JSON.stringify(r));
+  r = traceScore(bar, near, ink, line(50, 100, 500));
+  assert(r.off === 1, 'garabato afuera ' + JSON.stringify(r));
+  ink.fill(0); paint(ink, 100, 300, 280, 380);   // pintó solo la mitad
+  r = traceScore(bar, near, ink, line(330, 100, 300));
+  assert(r.cov > .45 && r.cov < .55 && r.off === 0, 'trazo corto ' + JSON.stringify(r));
+}
 
 // <script> simulado: ejecuta el archivo pedido en el contexto, como haría el navegador
 const ctx = {
